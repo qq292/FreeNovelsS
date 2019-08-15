@@ -1,9 +1,6 @@
 # FreeNovelsS
 致力打造免费看小说的网页
 
-pc运行：
-![alt](http://)
-
 
 
 
