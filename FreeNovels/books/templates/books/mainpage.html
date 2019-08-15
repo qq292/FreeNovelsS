@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load static %}
+    {#    <link rel="manifest" href="{% static 'manifest.json' %}">#}
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <script src="{% static 'bjs/jquery-3.3.1.js' %}"></script>
+    <script src="{% static 'bjs/autosize.js' %}"></script>
+    <script src="{% static 'layui-master/dist/layui.all.js' %}"></script>
+    <link type="text/css" rel="stylesheet" href="{% static 'layui-master/dist/css/layui.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'bstyle/mainstyle.css' %}">
+    <script src="{% static 'bjs/mainpage.js' %}"></script>
+    <p id="javascript">
+
+    </p>
+</head>
+<body class="layui-bod" bgcolor="#ffffff" is_windows="{{ is_windows }}" is_shelf="0">
+<ul class="layui-fixbar" style="">
+    <li id="fixbar-root" class="layui-icon layui-icon-triangle-r" lay-type="bar1" style="font-size: 30px;"></li>
+    <div id="fixbar-sub" style="display:none; ">
+        <li class="layui-icon" lay-type="bar1" style="font-size: 5px;">书架</li>
+        <li class="layui-icon" lay-type="bar2" style="font-size: 5px;">搜索</li>
+        <li class="layui-icon" lay-type="bar3" style="font-size: 5px;">章节</li>
+        <li class="layui-icon" lay-type="bar4" style="font-size: 5px;">正文</li>
+        <li class="layui-icon" lay-type="bar4" style="font-size: 5px;">设置</li>
+    </div>
+</ul>
+<script>
+
+    $("#fixbar-root").bind('click',function () {
+        var mthis=this;
+        $("#fixbar-sub").slideToggle("slow",function () {
+            if ($(mthis).is('.layui-icon-triangle-r')) {
+                //如果有的修改类的状态
+                $(mthis).removeClass('layui-icon-triangle-r');
+                $(mthis).addClass('layui-icon-triangle-d');
+            } else {
+                //如果没有的话修改类的状态
+                $(mthis).removeClass('layui-icon-triangle-d');
+                $(mthis).addClass('layui-icon-triangle-r');
+            }
+
+        });
+        
+    });
+    $("#fixbar-sub li").bind('click',function () {
+        var thisText=$(this).text();
+        layui.use('element', function () {
+            var element = layui.element;
+            if (thisText == "书架") {
+
+                element.tabChange('docDemoTabBrief', 'li2');
+                $('html,body').animate({scrollTop: $("div[class='layui-tab-content']").offset().top}, 1);
+
+            } else if (thisText == "搜索") {
+                element.tabChange('docDemoTabBrief', 'li6');
+                $('html,body').animate({scrollTop: $("div[class='layui-tab-content']").offset().top}, 1);
+
+            } else if (thisText == "章节") {
+                element.tabChange('docDemoTabBrief', 'li7');
+                $('html,body').animate({scrollTop: $("#" + $("#content_head").attr("data-content-id")).offset().top - $(window).height() / 2}, 1);
+
+            } else if (thisText == "正文") {
+                element.tabChange('docDemoTabBrief', 'li8');
+                if($("#dli8").attr("save-scrolltop")=="0"){
+                    $('html,body').animate({scrollTop: $("div[class='layui-tab-content']").offset().top}, 1);
+                }else{
+                    $(document).scrollTop($("#dli8").attr("save-scrolltop"))
+                }
+
+
+            } else if (thisText == "设置") {
+               element.tabChange('docDemoTabBrief', 'li9');
+                $('html,body').animate({scrollTop: $("div[class='layui-tab-content']").offset().top}, 1);
+
+            }
+
+            });
+
+
+    });
+</script>
+
+<div class="layui-container">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <div class="layui-input-block" style="margin: 30px auto;width:74%;">
+
+                <input type="text" id="title" name="booktitle" required lay-verify="required"
+                       value="无敌" placeholder="请输入关键字" autocomplete="off" class="layui-input"
+                       style="float: left;width:70%;">
+                <button id="find" data-sub-url="" class="layui-btn" style="float: left;width:30%px;">
+                    <i class="layui-icon layui-icon-search"></i>
+                </button>
+
+            </div>
+
+
+        </div>
+        <div class="layui-col-md12">
+
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                <ul class="layui-tab-title">
+                    <li lay-id="li1" class="layui-this">选择源</li>
+                    <li lay-id="li2">书架页</li>
+
+                    <li lay-id="li5">编写源</li>
+                    <li lay-id="li6">搜索页</li>
+                    <li lay-id="li7">章节页</li>
+                    <li lay-id="li8">正文页</li>
+                    <li lay-id="li9">设置页</li>
+
+                </ul>
+                <div class="layui-tab-content">
+                    <div id="dli1" class="layui-tab-item layui-show">
+                        <div style="border:1px solid #cee3e9;background:#f1f7f9;text-align: center;"><p
+                                id="selectsource">**请选择一个源**</p></div>
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="150">
+                                <col width="200">
+                                <col>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>源描述</th>
+                            </tr>
+                            </thead>
+                            <tbody id="trdli1">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="dli2" class="layui-tab-item">
+                        <div id="by_shelf">
+
+                        </div>
+                    </div>
+                    <div id="dli5" class="layui-tab-item">
+                        <div class="layui-form-item">
+
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">书源描述</h2>
+                                <div class="layui-colla-content layui-show">
+                                    <textarea style='resize: none;' name="describe" placeholder="书源描述"
+                                              class="layui-textarea"></textarea>
+                                </div>
+                            </div>
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">网页常量</h2>
+                                <div class="layui-colla-content layui-show">
+                                    <textarea style='resize: none;' name="constant" placeholder="网页常量"
+                                              class="layui-textarea"></textarea>
+                                </div>
+                            </div>
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">搜索页面</h2>
+                                <div class="layui-colla-content layui-show">
+                                    <textarea style='resize: none;' name="findpage" placeholder="搜索页面"
+                                              class="layui-textarea"></textarea>
+                                </div>
+                            </div>
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">章节页面</h2>
+                                <div class="layui-colla-content layui-show">
+                                    <textarea name="chapterpage" placeholder="章节页面" class="layui-textarea"></textarea>
+                                </div>
+                            </div>
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">正文页面</h2>
+                                <div class="layui-colla-content layui-show">
+                                        <textarea name="contentpage" placeholder="正文页面" class="layui-textarea"
+                                                  style="margin-bottom: 20px;"></textarea>
+                                </div>
+                            </div>
+                            <script>
+                                autosize(document.querySelectorAll('textarea'));
+
+                            </script>
+
+
+                            <button id="source" class="layui-btn layui-btn" lay-submit lay-filter="formDemo">保存书源
+                            </button>
+                            <button id="reinit" class="layui-btn layui-btn" lay-submit lay-filter="formDemo">重置模板
+                            </button>
+
+                        </div>
+                    </div>
+                    <div id="dli6" class="layui-tab-item" style="margin:10px;">
+                        <div class="layui-row">
+                            <div id="find_books">
+                            </div>
+                        </div>
+                        <div class="layui-row">
+                            <div style="text-align: center; padding: 30px 0px;">
+                                <button type="button" class="layui-btn layui-btn-xs" id="up_page">上一页</button>
+                                <button type="button" class="layui-btn layui-btn-xs" id="load_page">下一页</button>
+                                <label><span id="current_page"></span>/<span id="sub_page"></span></label>
+                                <button type="button" class="layui-btn layui-btn-xs" id="current_input">跳到</button>
+                                <input style="width: 30px;" type="text" name="title" id="jump_page" value="" required
+                                       lay-verify="required" placeholder="页码" autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dli7" class="layui-tab-item" style="margin:10px;">
+                        <div id="chapters">
+                        </div>
+                    </div>
+                    <div id="dli8" class="layui-tab-item book-color-900" data-remove-class="book-color-900" save-scrolltop="0">
+                        <div id="content_head" data-content-id=""
+                             style="text-align: center; padding: 20px 0px 30px;font-size: 24px"></div>
+                        <div id="contents"></div>
+                        <div style="text-align: center; padding: 30px 0px;">
+                            <button type="button" class="layui-btn layui-btn-xs" id="up_chapter">上一章</button>
+                            <button type="button" class="layui-btn layui-btn-xs" id="catalog_chapter">目录</button>
+                            <button type="button" class="layui-btn layui-btn-xs" id="load_chapter">下一章</button>
+
+                        </div>
+                    </div>
+                    <div id="dli9" class="layui-tab-item">
+                        <div id="by_set">
+                            <a href="javascript:;"><p class="book-color-100"
+                                                      style="padding: 10px 0px;text-align: center;">样式1</p></a>
+                            <a href="javascript:;"><p class="book-color-200"
+                                                      style="padding: 10px 0px;text-align: center;">样式2</p></a>
+                            <a href="javascript:;"><p class="book-color-300"
+                                                      style="padding: 10px 0px;text-align: center;">样式3</p></a>
+                            <a href="javascript:;"><p class="book-color-400"
+                                                      style="padding: 10px 0px;text-align: center;">样式4</p></a>
+                            <a href="javascript:;"><p class="book-color-500"
+                                                      style="padding: 10px 0px;text-align: center;">样式5</p></a>
+                            <a href="javascript:;"><p class="book-color-600"
+                                                      style="padding: 10px 0px;text-align: center;">样式6</p></a>
+                            <a href="javascript:;"><p class="book-color-700"
+                                                      style="padding: 10px 0px;text-align: center;">样式7</p></a>
+                            <a href="javascript:;"><p class="book-color-800"
+                                                      style="padding: 10px 0px;text-align: center;">样式8</p></a>
+                            <a href="javascript:;"><p class="book-color-900"
+                                                      style="padding: 10px 0px;text-align: center;">样式9</p></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md12">
+            {#            <div id="find_books">#}
+            {#            </div>#}
+        </div>
+    </div>
+    <!--底部固定-->
+    <div class="layui-laydate-footer"><!--style="background-color: #393D49"-->
+        <p style="font-size: 10px;color:#009688;">
+            © 2019<br>
+            内容均来自网络， 如有侵犯，联系qq:2920007919 删除.<br>
+
+            <a href="https://weibo.com/u/6218460300">
+                <i class="layui-icon layui-icon-login-weibo" style="color: #009688;"></i>
+            </a>
+
+            <a style="padding-left: 10px;" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=2920007919&site=qq&menu=yes">
+                <i class="layui-icon layui-icon-login-qq" style="color: #009688;"></i>
+            </a>
+
+        </p>
+    </div>
+</div>
+
+</body>

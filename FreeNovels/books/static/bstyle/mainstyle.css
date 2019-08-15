@@ -1,0 +1,78 @@
+.book-img-style {
+    border: 1px solid #009688;
+}
+
+#title{
+    border-top:2px solid #009688;
+    border-bottom:2px solid #009688;
+    border-left:2px solid #009688;
+    border-right:2px solid #009688;
+}
+
+#find{
+    border-top:2px solid #009688;
+    border-bottom:2px solid #009688;
+    border-left:2px solid #009688;
+    border-right:2px solid #009688;
+
+}
+#dli8 {
+    padding: 0px 10px;
+}
+#contents *{
+    font-size: 16px;
+}
+
+#contents p{
+    line-height: 24px;
+    padding-bottom: 20px;
+}
+.book-color-100{
+    background-color: #2b2b2b;
+    color: #bababa;
+
+}
+.book-color-200{
+    background-color: #CCE8CF;
+    color: #000000;
+
+}
+.book-color-300{
+    background-color: #FFF2E2;
+    color: #000000;
+
+}
+.book-color-400{
+    background-color: #FDE6E0;
+    color: #000000;
+
+}
+.book-color-500{
+    background-color: #E3EDCD;
+    color: #000000;
+
+}
+.book-color-600{
+    background-color: #DCE2F1;
+    color: #000000;
+
+}
+.book-color-700{
+    background-color: #E9EBFE;
+    color: #000000;
+
+}
+.book-color-800{
+    background-color: #EAEAEF;
+    color: #000000;
+
+}
+.book-color-900{
+    background-color: #FFFFFF;
+    color: #000000;
+
+}
+
+
+
+
