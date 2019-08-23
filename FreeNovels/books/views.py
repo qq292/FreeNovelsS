@@ -7,7 +7,6 @@ from .models import Source
 from urllib.parse import quote
 from lxml import etree
 
-
 # Create your views here.
 
 headers = {
