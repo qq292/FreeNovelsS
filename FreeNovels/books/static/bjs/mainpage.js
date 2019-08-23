@@ -29,8 +29,12 @@ $(document).ready(function () {
     }
     //初始化书源模板
     function init(){
-        $("textarea[name='describe']").val(
-        `对书源的描述`);
+        $("textarea[name='describe']").val(`
+对书源的描述
+subXpath不要用属性选择./div[@class='xxx']
+没有book_img 必须指定为None
+
+        `);
         $("textarea[name='constant']").val(`
 {
 "urlcode" : "utf-8",
@@ -41,6 +45,7 @@ $(document).ready(function () {
         $("textarea[name='findpage']").val(
         `
 {
+"findhtmlcode" : "utf-8", # 可以忽略，将使用全局htmlcode
 "furl" : "https://www.qidian.com/search?kw=",
 "book_xpath_root":"//div[@id='result-list']//li",
 "book_img":"./div[1]/a/img/@src",
@@ -121,8 +126,6 @@ return "https:"+chapter_url
         var storage=window.localStorage;
         var by_json,shelf_html;
         if (storage.length != 0) {
-
-            console.log(storage.length);
             for (var i = 0; i < storage.length; i++) {
                 var keys=storage.key(i);
                 if(keys!="bookColor"){
@@ -209,15 +212,19 @@ return "https:"+chapter_url
                 var storage = window.localStorage;
                 var my_shelf = storage.getItem($("body").attr("is_shelf"));
                 var thsScroll;
-                if (my_shelf != null) {
+                if (my_shelf != null) {//书架
                     var parseJs = $.parseJSON(my_shelf);
                     thsScroll = parseJs["shelf_scroll"];
-                }
-                if (thsScroll == "0") {
+                    if (thsScroll == "0") {
+                        $('html,body').animate({scrollTop: $("div[class='layui-tab-content']").offset().top}, 1);
+                    } else {
+                        $(document).scrollTop(thsScroll);
+                    }
+                }else{//非书架
                     $('html,body').animate({scrollTop: $("div[class='layui-tab-content']").offset().top}, 1);
-                } else {
-                    $(document).scrollTop(thsScroll);
                 }
+
+
 
                 layer.close(load_chapter_url); //关闭加载中的图标
             });
