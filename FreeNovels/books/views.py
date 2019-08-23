@@ -255,4 +255,4 @@ class Mainpage(View):
 
             return HttpResponse(content)
         else:
-            HttpResponse(json.dumps({"Error": " 你提交的mark参数不对！"}))
+            return HttpResponse(json.dumps({"Error": " 你提交的mark参数不对！"}))
