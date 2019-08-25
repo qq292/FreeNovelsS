@@ -359,7 +359,11 @@ return "https:"+chapter_url
 
     //选择源
     $.post(url = '', data = {"mark": "loadsource",}, function (data, status) {
-        for (var i in data) {
+
+        if(data['m']){
+            layer.msg(data['m'],{icon:5,time:1000});
+        }else{
+            for (var i in data) {
             $("#trdli1").append(`<tr data-id="` + data[i]['id'] + `" data-describe="` + data[i]['describe'] + `">
                                 <td>` + data[i]['id'] + `</td>
                                 <td>` + data[i]['describe'] + `</td>
@@ -373,6 +377,10 @@ return "https:"+chapter_url
                 $("#selectsource").attr({"select-id": $(this).attr("data-id")}).text("当前使用的源：『" + $(this).attr("data-describe") + "』ID：" + $(this).attr("data-id"))
             })
         }
+
+        }
+
+
 
     }, dataType = 'json');
 
@@ -427,15 +435,22 @@ return "https:"+chapter_url
                     'title': $("#title").val(),
                     "selectid": selectsource
                 }, function (data, status) {
-                    $("#sub_page").text(data["0"]["sub_page"]);//总页数
-                    $("#current_page").text("1");//当前页
-                    $("#find").attr({"data-sub-url": data["0"]["sub_url"]});//子url
-                    book_style(data);//加载bookhtml
-                    layui.use('element', function () {
-                        var element = layui.element;
-                        element.tabChange('docDemoTabBrief', 'li6');
-                        layer.close(load_find); //关闭加载中的图标
-                    });
+                    if(data['m']){
+                        layer.msg(data['m'],{icon:5,time:1000});
+                    }else{
+                        $("#sub_page").text(data["0"]["sub_page"]);//总页数
+                        $("#current_page").text("1");//当前页
+                        $("#find").attr({"data-sub-url": data["0"]["sub_url"]});//子url
+                        book_style(data);//加载bookhtml
+
+                        layui.use('element', function () {
+                            var element = layui.element;
+                            element.tabChange('docDemoTabBrief', 'li6');
+
+                        })
+                    }
+                    layer.close(load_find); //关闭加载中的图标
+
                 }, dataType = 'json')
             };
              add_script(selectsource,funcPost);//先获取js脚本 再搜索小说
@@ -513,13 +528,26 @@ return "https:"+chapter_url
     $("#up_chapter").bind('click',function () {
         var up_id=String(parseInt($("#content_head").attr("data-content-id"))-1);
         saveScrollTop(0);
-        $("#"+up_id).trigger("click")
+         var d=$("#"+up_id);
+
+        if(d.length>0){
+            d.trigger("click");
+        }else {
+            layer.msg("已经是第一章了",{icon:5,time:700})
+        }
     });
     //下一章被点击
     $("#load_chapter").bind('click',function () {
         var up_id=String(parseInt($("#content_head").attr("data-content-id"))+1);
         saveScrollTop(0);
-        $("#"+up_id).trigger("click")
+        var d=$("#"+up_id);
+
+        if(d.length>0){
+            d.trigger("click");
+        }else {
+            layer.msg("已经是最后一章了",{icon:5,time:700})
+        }
+
     });
     //保存滚动条位置
     function saveScrollTop(topRags){
