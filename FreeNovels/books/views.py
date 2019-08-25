@@ -105,7 +105,7 @@ class DbMixin(object):
         if select_id:
             # 返回一个 {字段：字段值} 的dict(不包涵["id","describe"]字段)
             db_filter = query_db.filter(id=select_id).first()
-            db_dict = {field.name: getattr(db_filter, field.name) for field in db_filter._meta.get_fields() if
+            db_dict = {field.name: eval(getattr(db_filter, field.name)) for field in db_filter._meta.get_fields() if
                        field.name not in ["id", "describe"]}
 
             return db_dict
@@ -115,6 +115,9 @@ class DbMixin(object):
 
 
 class PostMixin(DbMixin):
+    """
+    分发post请求
+    """
     mark = ['loadsource',  # 加载书源
             "add_script",  # 加载书源定义的js脚本
             'find',  # 搜索
@@ -130,7 +133,7 @@ class PostMixin(DbMixin):
             post_mark = request.POST.get('mark', None)
             if post_mark in self.mark:
                 self_name = getattr(self, post_mark, self)
-                if hasattr(self, self_name.__name__) and not hasattr(self, "Mainpage"):
+                if hasattr(self, self_name.__name__) and not hasattr(self, "MainPage"):
                     return HttpResponse(self_name(request, **self.get_db(request)))
                 else:
                     return HttpResponse(json.dumps({"m": "服务器找不到处理视图"}))
@@ -149,7 +152,8 @@ class MainPage(PostMixin, TemplateView):
         context["is_windows"] = "1" if "Windows" in context['view'].request.META.get('HTTP_USER_AGENT', None) else "0"
         return context
 
-    def loadsource(self, request, **kwargs):  # 加载源
+    @staticmethod
+    def loadsource(request, **kwargs):  # 加载源
         sources = []
         db = kwargs.get("query_db")  # Source.objects.all()
         for i in db:
@@ -159,10 +163,11 @@ class MainPage(PostMixin, TemplateView):
 
         return rejson
 
-    def add_script(self, request, **kwargs):  # 加载书源定义的js脚本
+    @staticmethod
+    def add_script(request, **kwargs):  # 加载书源定义的js脚本
 
-        getfindpage = eval(r"{0}".format(kwargs.get('findpage')))
-        getchapterpage = eval(r"{0}".format(kwargs.get('chapterpage')))
+        getfindpage = kwargs.get('findpage')
+        getchapterpage = kwargs.get('chapterpage')
         book_url_js = "<script>\nfunction data_url_js(book_url){0}\n{1}\n{2}\n</script>".format("{",
                                                                                                 getfindpage.get(
                                                                                                     "book_url_js"),
@@ -171,10 +176,11 @@ class MainPage(PostMixin, TemplateView):
             "{", getchapterpage.get("chapter_url_js"), "}")
         return json.dumps({"book_url_js": mark_safe(book_url_js), "chapter_url_js": mark_safe(chapter_url_js)})
 
-    def find(self, request, **kwargs):
+    @staticmethod
+    def find(request, **kwargs):
 
-        getfindpage = eval(r"{0}".format(kwargs.get('findpage')))
-        getfconstant = eval(r"{0}".format(kwargs.get('constant')))
+        getfindpage = kwargs.get('findpage')
+        getfconstant = kwargs.get('constant')
 
         title = quote(request.POST.get('title', None).encode(getfconstant.get("urlcode", "utf-8")))
         find_url = getfindpage['furl'] + title
@@ -205,7 +211,8 @@ class MainPage(PostMixin, TemplateView):
 
         return response_json
 
-    def source(self, request, **kwargs):  # 保存源
+    @staticmethod
+    def source(request, **kwargs):  # 保存源
         return HttpResponse(json.dumps({"m": "不开放此功能"}))
         describe = request.POST.get('describe', None)
         constant = request.POST.get('constant', None)
@@ -222,10 +229,10 @@ class MainPage(PostMixin, TemplateView):
             rejson = {'m': '保存成功'}
         return json.dumps(rejson)
 
-    def up_page(self, request, **kwargs):  # 到上一页（搜索页）
-        # fdb = Source.objects.get(id=request.POST.get("selectid"))
-        getfindpage = eval(r"{0}".format(kwargs.get('findpage')))
-        getfconstant = eval(r"{0}".format(kwargs.get('constant')))
+    @staticmethod
+    def up_page(request, **kwargs):  # 到上一页（搜索页）
+        getfindpage = kwargs.get('findpage')
+        getfconstant = kwargs.get('constant')
         current_page = request.POST.get("current_page", None)
         data_sub_url = request.POST.get("data_sub_url", None)
         sub_url = '{0}{1}'.format(data_sub_url, int(current_page) - 1)
@@ -234,10 +241,11 @@ class MainPage(PostMixin, TemplateView):
 
         return response_json
 
-    def load_page(self, request, **kwargs):  # 到下一页（搜索页）
+    @staticmethod
+    def load_page(request, **kwargs):  # 到下一页（搜索页）
 
-        getfindpage = eval(r"{0}".format(kwargs.get('findpage')))
-        getfconstant = eval(r"{0}".format(kwargs.get('constant')))
+        getfindpage = kwargs.get('findpage')
+        getfconstant = kwargs.get('constant')
         current_page = request.POST.get("current_page", None)
         data_sub_url = request.POST.get("data_sub_url", None)
         sub_url = '{0}{1}'.format(data_sub_url, int(current_page) + 1)
@@ -247,9 +255,10 @@ class MainPage(PostMixin, TemplateView):
 
         return response_json
 
-    def jump_page(self, request, **kwargs):  # 跳到某一页（搜索页）
-        getfindpage = eval(r"{0}".format(kwargs.get('findpage')))
-        getfconstant = eval(r"{0}".format(kwargs.get('constant')))
+    @staticmethod
+    def jump_page(request, **kwargs):  # 跳到某一页（搜索页）
+        getfindpage = kwargs.get('findpage')
+        getfconstant = kwargs.get('constant')
         jump_page = request.POST.get("jump_page", None)
         data_sub_url = request.POST.get("data_sub_url", None)
         sub_url = '{0}{1}'.format(data_sub_url, int(jump_page))
@@ -259,9 +268,10 @@ class MainPage(PostMixin, TemplateView):
 
         return response_json
 
-    def book_urls(self, request, **kwargs):  # 到章节页
-        getfconstant = eval(r"{0}".format(kwargs.get('constant')))
-        getchapterpage = eval(r"{0}".format(kwargs.get('chapterpage')))
+    @staticmethod
+    def book_urls(request, **kwargs):  # 到章节页
+        getfconstant = kwargs.get('constant')
+        getchapterpage = kwargs.get('chapterpage')
         book_url = request.POST.get("book_url")
 
         if "http" not in book_url:
@@ -285,9 +295,10 @@ class MainPage(PostMixin, TemplateView):
         response_json = json.dumps({str(a): b for a, b in enumerate(chapter_list)})
         return json.dumps(response_json)
 
-    def content_url(self, request, **kwargs):  # 到正文页
-        getfconstant = eval(r"{0}".format(kwargs.get('constant')))
-        getcontent = eval(r"{0}".format(kwargs.get('contentpage')))
+    @staticmethod
+    def content_url(request, **kwargs):  # 到正文页
+        getfconstant = kwargs.get('constant')
+        getcontent = kwargs.get('contentpage')
         content_url = request.POST.get("content_url")
 
         if "http" not in content_url:
